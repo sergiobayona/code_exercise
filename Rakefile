@@ -1,6 +1,5 @@
 require 'table_print'
 require_relative 'lib/setup'
-require_relative 'lib/stats'
 require_relative 'models/player'
 require_relative 'models/batting_stat'
 
@@ -27,22 +26,29 @@ task :stats do
 
   puts "BATTING AVERAGE"
   puts "\n"
-  tp Stats.batting_average, :player_id, {player_name: lambda {|u| u.player.name}}, :improved_delta
+  ba = BattingStat.best_batting_average(%w(2009 2010))
+  tp ba[:player], [{player: lambda{|a| ba[:player].name}}, {improved_delta: lambda{|a| ba[:delta].round(3)}}]
 
   puts "\n\n\n"
   puts "SLUGGING PERCENTAGE FOR OAK 2007"
   puts "\n"
-  tp Stats.slugging_percentage, :player_id, {player_name: lambda {|u| u.player.name }}, {slugging_percentage: lambda {|u| '%3.1f%%' % u.slugging_percentage }}
+  tp BattingStat.where(team_id: 'OAK', year: '2007'), [:player_id, {player_name: lambda {|u| u.player.name }}, {slugging_percentage: lambda {|u| '%3.1f%%' % u.slugging_percentage }}]
 
   puts "\n\n\n"
   puts "TRIPLE CROWN WINERS"
-  puts "\n"
   ['2011', '2012'].each do |year|
     ['AL', 'NL'].each do |league|
       puts "\n\n #{league} LEAGUE #{year} \n"
-      tp Stats.triple_crown_winner(year, league), :player_id, {player_name: lambda {|u| u.try(:player).try(:name) }}, :highest_batting_avg, :max_home_runs, :max_rbi
+      results = BattingStat.triple_crown_winner([year], league)
+      if results.is_a? BattingStat
+        tp results, [:player_name, {team: lambda{|u| u.team_id}}, {at_bats: lambda{|u| u.at_bats_aggregate}}, {hits: lambda {|u| u.hits_aggregate}}]
+      else
+        puts "no winner"
+      end
     end
   end
+
+
 
 
 
