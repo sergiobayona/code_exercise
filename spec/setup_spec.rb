@@ -14,32 +14,48 @@ describe Setup do
 
   let(:setup) { Setup.new(options) }
 
-  before { ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:' }
+  before { db_connect }
 
   it { expect(setup.options.class).to eq Array }
 
   context "setting up db tables" do
-    it "raises an exeception unless db_tables is invoked" do
-      expect {ActiveRecord::Base.connection.execute("SELECT * FROM players")}.to raise_error
+    it "raises an exeception unless create_db_tables is invoked" do
+      expect {query("SELECT * FROM players")}.to raise_error
     end
 
     it "does not raise an error" do
-      setup.db_tables
-      expect {ActiveRecord::Base.connection.execute("SELECT * FROM players")}.to_not raise_error
+      setup.create_db_tables
+      expect {query("SELECT * FROM players")}.to_not raise_error
     end
   end
 
-  context "loading data" do
-    before { setup.db_tables }
+  context "before loading data" do
+    before { setup.create_db_tables }
 
-    it "returns an empty array unless load_data is invoked" do
-      expect(ActiveRecord::Base.connection.execute("SELECT * FROM players")).to eq []
+    it "returns an empty array" do
+      expect(query("SELECT * FROM players")).to eq []
     end
+  end
 
-    it "loads the data into the table" do
+  context "after loading data" do
+    before do
+      setup.create_db_tables
       setup.load_data
-      expect(ActiveRecord::Base.connection.execute("SELECT * FROM players")).to eq [{"string" => "bla", "year" => "2010", 0 => "bla", 1 => "2010"}]
     end
+
+    it "returns a result set" do
+      expect(query("SELECT * FROM players")).to eq [{"string" => "bla", "year" => "2010", 0 => "bla", 1 => "2010"}]
+    end
+  end
+
+  private
+
+  def query(sql)
+    ActiveRecord::Base.connection.execute(sql)
+  end
+
+  def db_connect
+    ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:'
   end
 
 end

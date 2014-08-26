@@ -22,7 +22,7 @@ class Setup
     db_connect
   end
 
-  def db_tables
+  def create_db_tables
     @options.each do |option|
       create_table(option[:schema][:table_name], option[:schema][:columns])
     end
