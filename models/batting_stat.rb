@@ -23,6 +23,13 @@ class BattingStat < ActiveRecord::Base
     delta_results.max_by {|a| a[:delta]}
   end
 
+  def self.triple_crown_winner(years=[], league='AL', batting_above='400')
+    raise ArgumentError unless years.is_a?(Array) && batting_above.to_i > 0
+    results = batting_criteria(years, batting_above).where(league: league)
+    r = results.to_a.reject! {|i| i.at_bats.nil? || i.hits.nil? || i.home_runs.nil? || i.runs_batted_in.nil? }
+    top_result(r)
+  end
+
   private
 
   def self.calculate_delta(grouped_results)
@@ -33,5 +40,11 @@ class BattingStat < ActiveRecord::Base
       delta_results << {player: values.first.player, delta: delta }
     end
     delta_results
+  end
+
+  def self.top_result(r)
+    return [] if r.nil?
+    r = r.sort_by{|e| [(e.hits_aggregate.to_f/e.at_bats_aggregate.to_f), e.hits_aggregate, e.home_runs_aggregate, e.rbi_aggregate]}.reverse
+    r.first
   end
 end
