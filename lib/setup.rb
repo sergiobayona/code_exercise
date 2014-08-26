@@ -4,6 +4,16 @@ require 'active_record'
 require 'csv'
 require 'pry'
 
+
+# This is class for loading any number of CSV files with arbitrary structures into a in-memory SQLite db.
+# It requires an "options" array with specific keys and values:
+  # options = [
+  #   {
+  #     data_file: <path to csv file>,
+  #     schema: { table_name: <table name (string)>, columns: <array of columns names (string)> }
+  #   }, ...
+  # ]
+
 class Setup
   attr_accessor :options
 
