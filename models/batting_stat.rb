@@ -10,12 +10,11 @@ class BattingStat < ActiveRecord::Base
     .group(:year, :player_id)
   }
 
-
   def slugging_percentage
     at_bats.to_i > 0 ? (100.0 * (hits + 2*doubles + 3*triples + 4*home_runs) / at_bats) : 0.0
   end
 
-  def self.best_batting_average(years=[], batting_above='200')
+  def self.best_batting_average(years=['2009', '2010'], batting_above='200')
     raise ArgumentError unless years.is_a?(Array) && batting_above.to_i > 0
     results = batting_criteria(years, batting_above)
     grouped_results = results.to_a.group_by{|a| a.player_id }
@@ -23,7 +22,7 @@ class BattingStat < ActiveRecord::Base
     delta_results.max_by {|a| a[:delta]}
   end
 
-  def self.triple_crown_winner(years=[], league='AL', batting_above='400')
+  def self.triple_crown_winner(years=['2012'], league='AL', batting_above='400')
     raise ArgumentError unless years.is_a?(Array) && batting_above.to_i > 0
     results = batting_criteria(years, batting_above).where(league: league)
     r = results.to_a.reject! {|i| i.at_bats.nil? || i.hits.nil? || i.home_runs.nil? || i.runs_batted_in.nil? }
