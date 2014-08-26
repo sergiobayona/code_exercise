@@ -4,10 +4,10 @@ describe Setup do
   let(:options) do
     [
       {
-        data_file: "spec/support/test.csv",
+        data_file: "spec/support/players.csv",
         schema: {
           table_name: 'players',
-        columns: ['string', 'year'] }
+        columns: ['player_id', 'birth_year', 'first_name', 'last_name'] }
       }
     ]
   end
