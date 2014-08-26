@@ -31,6 +31,12 @@ describe BattingStat do
 
   it { expect(stat.slugging_percentage).to be_a(Float) }
 
+  describe "slugging percentage" do
+    let(:stat) { BattingStat.new(player_id: "test", year: "2012", at_bats: 607, hits: 137, doubles: 22, triples: 5, home_runs: 12) }
+
+    it { expect(stat.slugging_percentage).to eq 40.19769357495881 }
+  end
+
   describe "best batting average" do
     let(:bba) { BattingStat.best_batting_average }
 
