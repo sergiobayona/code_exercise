@@ -3,6 +3,7 @@ class BattingStat < ActiveRecord::Base
 
   delegate :name, to: :player, prefix: true, allow_nil: true
 
+  # sums up stats per-player per-year to account for trade-ins on a given year
   scope :batting_criteria, ->(years, batting_above) {
     select("*, SUM(at_bats) AS at_bats_aggregate, SUM(hits) AS hits_aggregate, SUM(home_runs) AS home_runs_aggregate, SUM(runs_batted_in) AS rbi_aggregate")
     .where(year: years)
