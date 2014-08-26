@@ -4,7 +4,7 @@ class BattingStat < ActiveRecord::Base
   delegate :name, to: :player, prefix: true, allow_nil: true
 
   scope :batting_criteria, ->(years, batting_above) {
-    select("*, SUM(at_bats) AS at_bats_aggregate, SUM(hits) AS hits_aggregate")
+    select("*, SUM(at_bats) AS at_bats_aggregate, SUM(hits) AS hits_aggregate, SUM(home_runs) AS home_runs_aggregate, SUM(runs_batted_in) AS rbi_aggregate")
     .where(year: years)
     .where(self.arel_table[:at_bats].gt(batting_above))
     .group(:year, :player_id)
