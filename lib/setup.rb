@@ -18,7 +18,8 @@ class Setup
   attr_accessor :options
 
   def initialize(options)
-    @options = options
+    @options = Array(options)
+    ensure_proper_options_argument
     db_connect
   end
 
