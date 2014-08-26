@@ -18,6 +18,29 @@ describe Setup do
 
   it { expect(setup.options.class).to eq Array }
 
+  context "ensuring proper options argument" do
+    it "raises an argument error if options is nil or an empty array" do
+      expect { Setup.new(nil) }.to raise_error(ArgumentError, "array is empty!")
+      expect { Setup.new([]) }.to raise_error(ArgumentError, "array is empty!")
+    end
+
+    it "raise an error if no data_file k/v pair is found" do
+      expect { Setup.new([{}])}.to raise_error(ArgumentError, "missing data_file key/value")
+    end
+
+    it "raise an error if no proper schema is found" do
+      expect { Setup.new([{data_file: "/"}]) }.to raise_error(ArgumentError, "missing schema key/value")
+    end
+
+    it "raises an error if the schema has not table name" do
+      expect { Setup.new([{data_file: "/", schema: {}}])}.to raise_error(ArgumentError, "missing schema's table_name")
+    end
+
+    it "raises an error if the schema has no column_names" do
+      expect { Setup.new([{data_file: "/", schema: {table_name: "."}}])}.to raise_error(ArgumentError, "missing schema's column_name's")
+    end
+  end
+
   context "setting up db tables" do
     it "raises an exeception unless create_db_tables is invoked" do
       expect {query("SELECT * FROM players")}.to raise_error
@@ -33,7 +56,7 @@ describe Setup do
     before { setup.create_db_tables }
 
     it "returns an empty array" do
-      expect(query("SELECT * FROM players")).to eq []
+      expect(query("SELECT * FROM players")).to be_empty
     end
   end
 
@@ -44,7 +67,7 @@ describe Setup do
     end
 
     it "returns a result set" do
-      expect(query("SELECT * FROM players")).to eq [{"string" => "bla", "year" => "2010", 0 => "bla", 1 => "2010"}]
+      expect(query("SELECT * FROM players")).to_not be_empty
     end
   end
 
