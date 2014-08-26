@@ -21,7 +21,7 @@ task :stats do
   ]
 
   setup = Setup.new(options)
-  setup.db_tables
+  setup.create_db_tables
   setup.load_data
 
   puts "BATTING AVERAGE"
