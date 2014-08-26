@@ -65,4 +65,12 @@ class Setup
   def db_connect
     ActiveRecord::Base.establish_connection adapter: 'sqlite3', database: ':memory:'
   end
+
+  def ensure_proper_options_argument
+    raise ArgumentError, "array is empty!" if @options.empty?
+    raise ArgumentError, "missing data_file key/value" unless @options.all? {|o| o[:data_file].present? }
+    raise ArgumentError, "missing schema key/value" unless @options.all? {|o| o[:schema].is_a? Hash }
+    raise ArgumentError, "missing schema's table_name" unless @options.all? {|o| o[:schema][:table_name].present? }
+    raise ArgumentError, "missing schema's column_name's" unless @options.all? {|o| o[:schema][:columns].is_a? Array}
+  end
 end
