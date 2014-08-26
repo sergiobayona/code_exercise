@@ -1,6 +1,8 @@
 class BattingStat < ActiveRecord::Base
   belongs_to :player, primary_key: :player_id
 
+  delegate :name, to: :player, prefix: true, allow_nil: true
+
   scope :batting_criteria, ->(years, batting_above) {
     select("*, SUM(at_bats) AS at_bats_aggregate, SUM(hits) AS hits_aggregate")
     .where(year: years)
